@@ -1,0 +1,108 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.7.22'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'nu.studer.jooq' version '7.1.1'
+}
+
+group = 'uk.co.renbinden'
+version = '2.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    flywayMigration
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.22'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.22'
+    implementation(platform('dev.forkhandles:forkhandles-bom:2.3.0.0'))
+    implementation('dev.forkhandles:result4k')
+    implementation platform('org.http4k:http4k-bom:4.35.0.0')
+    implementation 'org.http4k:http4k-core'
+    implementation 'org.http4k:http4k-server-jetty'
+    implementation 'org.http4k:http4k-format-gson'
+    implementation 'org.jooq:jooq:3.17.5'
+    implementation 'org.flywaydb:flyway-core:9.8.2'
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'org.postgresql:postgresql:42.5.1'
+    implementation 'org.slf4j:slf4j-jdk14:2.0.5'
+    implementation 'org.slf4j:slf4j-api:2.0.5'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-gson:0.11.5'
+    implementation 'com.google.code.gson:gson:2.10'
+    jooqGenerator 'org.jooq:jooq-meta-extensions:3.17.5'
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+import org.jooq.meta.jaxb.Logging
+
+jooq {
+    configurations {
+        main {
+            generationTool {
+                logging = Logging.WARN
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.extensions.ddl.DDLDatabase'
+                        inputSchema = 'PUBLIC'
+                        includes = '.*'
+                        excludes = ''
+                        properties {
+                            property {
+                                key = "scripts"
+                                value = "src/main/resources/uk/co/renbinden/vantage/db/migration"
+                            }
+                            property {
+                                key = "sort"
+                                value = "semantic"
+                            }
+                            property {
+                                key = "defaultNameCase"
+                                value = "lower"
+                            }
+                        }
+                    }
+                    target {
+                        packageName = 'uk.co.renbinden.vantage.jooq'
+                    }
+                }
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '17'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '17'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'uk.co.renbinden.vantage.VantageKt'
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+artifacts {
+    archives shadowJar
+}
