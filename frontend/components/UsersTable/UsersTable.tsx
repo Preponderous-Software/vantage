@@ -49,7 +49,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({ token }) => {
             />
           </Paper>
           : isUsersError
-            ? <Alert severity='error'>Failed to load audit log.</Alert>
+            ? <Alert severity='error'>Failed to load users.</Alert>
             : <TableContainer component={Paper} elevation={2}>
               <Table>
                 <TableHead>
