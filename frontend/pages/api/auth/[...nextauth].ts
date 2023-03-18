@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials: any, req: any) {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_VANTAGE_API_URL}/login`, {
+        const res = await fetch(`${process.env.VANTAGE_API_URL}/login`, {
           method: 'POST',
           body: JSON.stringify(credentials),
           headers: { 'Content-Type': 'application/json' }
