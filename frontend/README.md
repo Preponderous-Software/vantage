@@ -13,6 +13,19 @@ This guide assumes that you are using a fresh install of Ubuntu 20.04.
 1. Clone the repository into the folder as 'vantage-repo'
 1. Create a link to the frontend folder using `ln -s vantage-repo/frontend vantage-frontend`
 1. Cd into `vantage-frontend`
+1. List hidden files using `ls -a` and verify that there is a file called `.env.local.example`
+1. Copy the example file using `cp .env.local.example .env.local`
+1. Generate a value for NEXTAUTH_SECRET with `openssl rand -base64 32` and copy it into the `.env.local` file
+1. Edit the `.env.local` file. Below is an example of what it should look like. Replace all values in <> with the appropriate values.
+    ```ini
+    NEXT_PUBLIC_VANTAGE_API_URL=http://<public_ip>:9000/api/v2
+    # Auth is done via the API and therefore requires a URL that is accessible from the next.js backend
+    VANTAGE_API_URL=http://localhost:9000/api/v2
+    NEXT_PUBLIC_VANTAGE_WEBSOCKET_URL=ws://<public_ip>:9000/ws
+    # Generate a value for NEXTAUTH_SECRET with openssl rand -base64 32
+    NEXTAUTH_SECRET=<secret>
+    NEXTAUTH_URL=http://<public_ip>:3000
+    ```
 1. Install dependencies using `npm install`
 1. Build the frontend using `npm run build`
 
