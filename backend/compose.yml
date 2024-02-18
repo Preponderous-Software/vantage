@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  vantage-backend:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+          - "9000:9000"
+          - "25565:25565"
+      depends_on:
+          - vantage-db
+      networks:
+          - default
+
+  vantagedb:
+      image: postgres:13
+      environment:
+          POSTGRES_USER: "vantage"
+          POSTGRES_PASSWORD: "vantage"
+          POSTGRES_DB: "vantage"
+      ports:
+          - "5432:5432"
+      networks:
+          - default
+
+networks:
+  default:
+    name: vantage-network
+    driver: bridge
