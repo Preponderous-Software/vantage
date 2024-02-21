@@ -1,13 +1,16 @@
 FROM ubuntu:20.04 as builder
 
-# Set the working directory
-WORKDIR /opt/vantage-build
-
 # Install dependencies
 RUN apt-get update
 RUN apt-get install -y openjdk-17-jdk
 RUN apt-get install -y wget
 RUN apt-get install -y git
+
+# Build the spigot server
+WORKDIR /opt/spigot-build
+RUN wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+RUN git config --global --unset core.autocrlf || :
+RUN java -jar BuildTools.jar --rev 1.20.4
 
 # Copy everything but Dockerfile
 WORKDIR /opt/vantage-backend-build
@@ -26,12 +29,6 @@ COPY settings.gradle settings.gradle
 RUN sed -i 's/\r$//' gradlew
 RUN chmod +x gradlew
 RUN ./gradlew build
-
-# Build the spigot server
-WORKDIR /opt/spigot-build
-RUN wget -O BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-RUN git config --global --unset core.autocrlf || :
-RUN java -jar BuildTools.jar --rev 1.20.4
 
 
 FROM ubuntu:20.04 as runtime
